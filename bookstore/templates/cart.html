@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Your Cart</h2>
+
+  {% if cart %}
+    <ul>
+      {% for id, item in cart.items %}
+        <li>
+          {{ item.title }} — ₹{{ item.price }} * {{ item.quantity }}
+          <!-- Remove Button -->
+          <form action="{% url 'remove-from-cart' id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="button">Remove</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+    <h4>Total: ₹{{ total }}</h4>
+
+    <!-- Add More Button -->
+    <a href="{% url 'book-list' %}" class="button">Add More</a>
+
+    <!-- Payment Button -->
+    <form action="{% url 'payment' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="button">Proceed to Payment</button>
+    </form>
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+{% endblock %}
