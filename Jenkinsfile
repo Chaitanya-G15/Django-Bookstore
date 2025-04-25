@@ -2,45 +2,47 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'bookstore-image'
-        DOCKER_TAG = 'latest'
+        PROJECT_DIR = 'Django-Bookstore'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
-                echo '✅ Cloning repository...'
-                // Jenkins will clone repo by default; no need to do anything
+                git 'https://github.com/Chaitanya-G15/Django-Bookstore.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                dir("${PROJECT_DIR}") {
+                    bat 'docker-compose build'
                 }
             }
         }
 
         stage('Run Migrations') {
             steps {
-                sh "docker-compose run web python manage.py migrate"
+                dir("${PROJECT_DIR}") {
+                    bat 'docker-compose run web python manage.py migrate'
+                }
             }
         }
 
-        stage('Run Server') {
+        stage('Start Server') {
             steps {
-                sh "docker-compose up -d"
+                dir("${PROJECT_DIR}") {
+                    bat 'docker-compose up -d'
+                }
             }
         }
     }
 
     post {
         success {
-            echo '✅ Deployment completed successfully!'
+            echo "✅ Deployment successful!"
         }
         failure {
-            echo '❌ Deployment failed!'
+            echo "❌ Deployment failed!"
         }
     }
 }
